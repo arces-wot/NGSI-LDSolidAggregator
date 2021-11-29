@@ -54,8 +54,13 @@
        }
     },
        "META_ADDER_CONTAINER": {
-      "sparql": "DELETE WHERE { GRAPH ?metagraphcontainer { ?s ?p ?o. } }; INSERT DATA { GRAPH ?metagraphcontainer {?graphcontainer <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://www.w3.org/ns/ldp#BasicContainer>; <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://www.w3.org/ns/ldp#Container>; <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://www.w3.org/ns/ldp#Resource>; <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://www.w3.org/ns/pim/space#Storage>; <http://purl.org/dc/terms/modified> '2021-11-17T11:15:49.000Z'^^<http://www.w3.org/2001/XMLSchema#dateTime>.  }}",
+      "sparql": "DELETE WHERE { GRAPH ?metagraphcontainer { ?s ?p ?o. } }; INSERT DATA { GRAPH ?metagraphcontainer {?graphcontainer <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://www.w3.org/ns/ldp#BasicContainer>; <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://www.w3.org/ns/ldp#Container>; <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://www.w3.org/ns/ldp#Resource>; <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://www.w3.org/ns/pim/space#Storage>; <http://purl.org/dc/terms/modified> ?datetime.  }}",
       "forcedBindings": {
+      	"datetime": {
+			"type": "literal",
+			"value": "2018-06-28T00:00:00",
+			"datatype": "xsd:dateTime"
+					},
         "metagraphcontainer": {
           "type": "uri"
         },
@@ -65,8 +70,13 @@
        }
     },
     "META_ADDER": {
-      "sparql": "DELETE WHERE { GRAPH ?graph { ?s ?p ?o. } }; INSERT DATA { GRAPH ?graph { ?subject <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://www.w3.org/ns/ldp#Resource>; <http://purl.org/dc/terms/modified> '2021-11-16T20:42:12.000Z'^^<http://www.w3.org/2001/XMLSchema#dateTime>.}}",
+      "sparql": "DELETE WHERE { GRAPH ?graph { ?s ?p ?o. } }; INSERT DATA { GRAPH ?graph { ?subject <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://www.w3.org/ns/ldp#Resource>; <http://purl.org/dc/terms/modified> ?datetime.}}",
       "forcedBindings": {
+        "datetime": {
+		"type": "literal",
+		"value": "2018-06-28T00:00:00",
+		"datatype": "xsd:dateTime"
+					},
         "graph": {
           "type": "uri"
         },

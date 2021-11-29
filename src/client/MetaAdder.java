@@ -3,12 +3,9 @@ package client;
 import java.io.IOException;
 import java.net.URI;
 import java.net.URISyntaxException;
+import java.time.Instant;
 import java.util.List;
 import java.util.Set;
-
-
-import com.sun.imageio.plugins.tiff.TIFFOldJPEGDecompressor;
-import com.google.gson.Gson;
 
 import it.unibo.arces.wot.sepa.commons.exceptions.SEPABindingsException;
 import it.unibo.arces.wot.sepa.commons.exceptions.SEPAPropertiesException;
@@ -56,8 +53,10 @@ public class MetaAdder extends Aggregator {
 			// TODO if already exists we don't have to do this
 			if (!metaAlreadyExists(graph)) {
 				try {
+					Instant datetime = java.time.Clock.systemUTC().instant();
 					this.setUpdateBindingValue("subject", new RDFTermURI(subject));
 					this.setUpdateBindingValue("graph", new RDFTermURI(graph));
+					this.setUpdateBindingValue("datetime", new RDFTermLiteral(datetime.toString()));
 
 				} catch (SEPABindingsException e) {
 					e.printStackTrace();
@@ -87,9 +86,11 @@ public class MetaAdder extends Aggregator {
 				String updateID = "META_ADDER_CONTAINER";
 				if (!metaAlreadyExists(metagraphcontainer)) {
 				try {
+					Instant datetime = java.time.Clock.systemUTC().instant();
 					addMetaContainer = new Producer(appProfile, updateID);
 					addMetaContainer.setUpdateBindingValue("metagraphcontainer", new RDFTermURI(metagraphcontainer));
 					addMetaContainer.setUpdateBindingValue("graphcontainer", new RDFTermURI(subject_parent));
+					addMetaContainer.setUpdateBindingValue("datetime", new RDFTermLiteral(datetime.toString()));
 					addMetaContainer.update();
 					addMetaContainer.close();
 				} catch (SEPAProtocolException | SEPASecurityException | SEPAPropertiesException | SEPABindingsException
