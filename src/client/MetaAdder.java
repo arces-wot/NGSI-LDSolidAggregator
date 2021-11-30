@@ -51,7 +51,7 @@ public class MetaAdder extends Aggregator {
 			String subject_parent = subject;
 			String graph = "meta:" + subject;
 			// TODO if already exists we don't have to do this
-			if (!metaAlreadyExists(graph)) {
+			if (!graphExists(graph)) {
 				try {
 					Instant datetime = java.time.Clock.systemUTC().instant();
 					this.setUpdateBindingValue("subject", new RDFTermURI(subject));
@@ -84,19 +84,20 @@ public class MetaAdder extends Aggregator {
 				String metagraphcontainer = "meta:" + subject_parent;
 				Producer addMetaContainer;
 				String updateID = "META_ADDER_CONTAINER";
-				if (!metaAlreadyExists(metagraphcontainer)) {
-				try {
-					Instant datetime = java.time.Clock.systemUTC().instant();
-					addMetaContainer = new Producer(appProfile, updateID);
-					addMetaContainer.setUpdateBindingValue("metagraphcontainer", new RDFTermURI(metagraphcontainer));
-					addMetaContainer.setUpdateBindingValue("graphcontainer", new RDFTermURI(subject_parent));
-					addMetaContainer.setUpdateBindingValue("datetime", new RDFTermLiteral(datetime.toString()));
-					addMetaContainer.update();
-					addMetaContainer.close();
-				} catch (SEPAProtocolException | SEPASecurityException | SEPAPropertiesException | SEPABindingsException
-						| IOException e) {
-					System.err.println("Something went wrong during execution of " + updateID);
-				}
+				if (!graphExists(metagraphcontainer)) {
+					try {
+						Instant datetime = java.time.Clock.systemUTC().instant();
+						addMetaContainer = new Producer(appProfile, updateID);
+						addMetaContainer.setUpdateBindingValue("metagraphcontainer",
+								new RDFTermURI(metagraphcontainer));
+						addMetaContainer.setUpdateBindingValue("graphcontainer", new RDFTermURI(subject_parent));
+						addMetaContainer.setUpdateBindingValue("datetime", new RDFTermLiteral(datetime.toString()));
+						addMetaContainer.update();
+						addMetaContainer.close();
+					} catch (SEPAProtocolException | SEPASecurityException | SEPAPropertiesException
+							| SEPABindingsException | IOException e) {
+						System.err.println("Something went wrong during execution of " + updateID);
+					}
 				}
 				// add contains property
 				// TODO if already exists we don't have to do this
@@ -126,17 +127,17 @@ public class MetaAdder extends Aggregator {
 
 	}
 
-	private boolean metaAlreadyExists(String graph) {
+	private boolean graphExists(String graph) {
 		// TODO Auto-generated method stub
 		String queryID = "ASK_GRAPH";
-		boolean result= false;
+		boolean result = false;
 		try {
 			GenericClient client = new GenericClient(this.appProfile, null);
-			Bindings binding= new Bindings();
-			binding.addBinding("g",  new RDFTermURI(graph));
+			Bindings binding = new Bindings();
+			binding.addBinding("g", new RDFTermURI(graph));
 			QueryResponse res = (QueryResponse) client.query(queryID, binding);
 			result = res.toString().contains("true");
-			
+
 		} catch (SEPAProtocolException | SEPASecurityException | SEPAPropertiesException | SEPABindingsException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
@@ -199,7 +200,46 @@ public class MetaAdder extends Aggregator {
 
 	@Override
 	public void onRemovedResults(BindingsResults results) {
-		// TODO Auto-generated method stub
+		List<Bindings> data = results.getBindings();
+		for (Bindings binding : data) {
+
+			String graph = binding.getValue("g");
+			if (!this.graphExists(graph)) {
+				String meta_graph = "meta:" + graph;
+				Producer addContains;
+				String updateID = "DELETE_META";
+				try {
+					addContains = new Producer(appProfile, updateID);
+					addContains.setUpdateBindingValue("graph", new RDFTermURI(meta_graph));
+					addContains.update();
+					addContains.close();
+				} catch (SEPAProtocolException | SEPASecurityException | SEPAPropertiesException | SEPABindingsException
+						| IOException e) {
+					System.err.println("Something went wrong during execution of " + updateID);
+				}
+			}
+			if (!this.isRootContainer(graph, ROOT)) {
+				try {
+					String fathergraph = this.getParentContainer(graph);
+					Producer addContains;
+					String updateID = "DELETE_CONTAINS";
+					try {
+						addContains = new Producer(appProfile, updateID);
+						addContains.setUpdateBindingValue("fathergraph", new RDFTermURI(fathergraph));
+						addContains.setUpdateBindingValue("graph", new RDFTermURI(graph));
+						addContains.update();
+						addContains.close();
+					} catch (SEPAProtocolException | SEPASecurityException | SEPAPropertiesException | SEPABindingsException
+							| IOException e) {
+						System.err.println("Something went wrong during execution of " + updateID);
+					}
+					
+				} catch (URISyntaxException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+			}
+		}
 
 	}
 

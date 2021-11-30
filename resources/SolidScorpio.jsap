@@ -53,6 +53,25 @@
         }
        }
     },
+      "DELETE_META": {
+      "sparql": "DELETE WHERE { GRAPH ?graph { ?s ?p ?o. } }",
+      "forcedBindings": {
+        "graph": {
+          "type": "uri"
+        }
+       }
+    },
+          "DELETE_CONTAINS": {
+      "sparql": "DELETE WHERE { GRAPH ?fathergraph { ?fathergraph 	<http://www.w3.org/ns/ldp#contains> ?graph. } }",
+      "forcedBindings": {
+        "fathergraph": {
+          "type": "uri"
+        },
+                "graph": {
+          "type": "uri"
+        }
+       }
+    },
        "META_ADDER_CONTAINER": {
       "sparql": "DELETE WHERE { GRAPH ?metagraphcontainer { ?s ?p ?o. } }; INSERT DATA { GRAPH ?metagraphcontainer {?graphcontainer <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://www.w3.org/ns/ldp#BasicContainer>; <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://www.w3.org/ns/ldp#Container>; <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://www.w3.org/ns/ldp#Resource>; <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://www.w3.org/ns/pim/space#Storage>; <http://purl.org/dc/terms/modified> ?datetime.  }}",
       "forcedBindings": {
